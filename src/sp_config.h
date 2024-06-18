@@ -70,6 +70,7 @@ typedef struct {
 
 typedef struct {
   sp_list_node *whitelist;
+  sp_list_node *php_stream_allowlist;
   bool enabled;
   size_t num_wrapper;  // Used to verify if wrappers were added.
 } sp_config_wrapper;
@@ -188,7 +189,7 @@ typedef struct {
 
 typedef struct {
   SP_PARSE_FN((*func));
-  char *token;
+  const char *token;
   void *retval;
 } sp_config_keyword;
 
@@ -214,6 +215,7 @@ typedef struct {
 #define SP_TOKEN_EVAL_WHITELIST "eval_whitelist"
 #define SP_TOKEN_SLOPPY_COMPARISON "sloppy_comparison"
 #define SP_TOKEN_ALLOW_WRAPPERS "wrappers_whitelist"
+#define SP_TOKEN_ALLOW_PHP_STREAMS "php_list"
 #define SP_TOKEN_INI_PROTECTION "ini_protection"
 #define SP_TOKEN_INI "ini"
 
@@ -295,7 +297,7 @@ SP_PARSEKW_FN(parse_str);
 SP_PARSEKW_FN(parse_regexp);
 SP_PARSEKW_FN(parse_empty);
 SP_PARSEKW_FN(parse_int);
-SP_PARSEKW_FN(parse_ulong);
+SP_PARSEKW_FN(parse_uint);
 SP_PARSEKW_FN(parse_php_type);
 SP_PARSEKW_FN(parse_cidr);
 SP_PARSEKW_FN(parse_list);

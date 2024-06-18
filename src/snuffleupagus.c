@@ -57,7 +57,7 @@ ZEND_DLEXPORT zend_extension zend_extension_entry = {
     NULL,                /* op_array_dtor_func_t */
     STANDARD_ZEND_EXTENSION_PROPERTIES};
 
-static void sp_load_other_modules() {
+static void sp_load_other_modules(void) {
   // try to load other modules before initializing Snuffleupagus
   zend_module_entry *module;
   bool should_start = false;
@@ -113,6 +113,7 @@ static PHP_GINIT_FUNCTION(snuffleupagus) {
   SP_INIT_NULL(config_eval.blacklist);
   SP_INIT_NULL(config_eval.whitelist);
   SP_INIT_NULL(config_wrapper.whitelist);
+  SP_INIT_NULL(config_wrapper.php_stream_allowlist);
 #undef SP_INIT_NULL
 }
 
@@ -175,6 +176,7 @@ static PHP_GSHUTDOWN_FUNCTION(snuffleupagus) {
   FREE_LST(config_eval.blacklist);
   FREE_LST(config_eval.whitelist);
   FREE_LST(config_wrapper.whitelist);
+  FREE_LST(config_wrapper.php_stream_allowlist);
 #undef FREE_LST
 
 
@@ -327,7 +329,7 @@ static void add_df_to_arr(zval *arr, sp_disabled_function const *const df) {
   add_next_index_zval(arr, &arr_df);
 }
 
-static void dump_config() {
+static void dump_config(void) {
   zval arr;
   php_serialize_data_t var_hash;
   smart_str buf = {0};
@@ -387,7 +389,8 @@ static void dump_config() {
   add_assoc_long(&arr, SP_TOKEN_SESSION_ENCRYPTION "." SP_TOKEN_SID_MAX_LENGTH, SPCFG(session).sid_max_length);
   add_assoc_bool(&arr, SP_TOKEN_SLOPPY_COMPARISON "." SP_TOKEN_ENABLE, SPCFG(sloppy).enable);
 
-  ADD_ASSOC_SPLIST(&arr, SP_TOKEN_ALLOW_WRAPPERS, SPCFG(wrapper).whitelist);
+  ADD_ASSOC_SPLIST(&arr, SP_TOKEN_ALLOW_WRAPPERS "." SP_TOKEN_LIST, SPCFG(wrapper).whitelist);
+  ADD_ASSOC_SPLIST(&arr, SP_TOKEN_ALLOW_WRAPPERS "." SP_TOKEN_ALLOW_PHP_STREAMS, SPCFG(wrapper).php_stream_allowlist);
 
 #undef ADD_ASSOC_SPLIST
 
@@ -619,7 +622,7 @@ static PHP_INI_MH(OnUpdateConfiguration) {
   return SUCCESS;
 }
 
-const zend_function_entry snuffleupagus_functions[] = {PHP_FE_END};
+static const zend_function_entry snuffleupagus_functions[] = {PHP_FE_END};
 
 zend_module_entry snuffleupagus_module_entry = {
     STANDARD_MODULE_HEADER,

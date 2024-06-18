@@ -302,7 +302,7 @@ to restrict execution to users on the LAN for example. There are a *lot*
 of different filters, so make sure to read the :ref:`corresponding documentation <virtual-patching-config>`.
 
 Furthermore, running the `following script <https://github.com/nbs-system/snuffleupagus/blob/master/scripts/generate_rules.php>`_  will generate an hash and line-based whitelist
-of dangerous functions, droping them everywhere else:
+of dangerous functions, dropping them everywhere else:
 
 
 .. literalinclude:: ../../scripts/generate_rules.php
@@ -381,7 +381,7 @@ and using this feature to lock this up.
 Whitelist of stream-wrappers
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Php comes with a `lot of different <https://secure.php.net/manual/en/wrappers.php>`__
+PHP comes with a `lot of different <https://secure.php.net/manual/en/wrappers.php>`__
 `stream wrapper <https://secure.php.net/manual/en/intro.stream.php>`__, and most of them
 are enabled by default.
 
@@ -396,6 +396,22 @@ Examples of related vulnerabilities
 - `RCE via phar:// <https://github.com/orangetw/My-CTF-Web-Challenges#babyh-master-php-2017>`__
 - `Data exfiltration via stream wrapper <https://www.idontplaydarts.com/2011/02/using-php-filter-for-local-file-inclusion/>`__
 - `Inclusion via zip/phar <https://lightless.me/archives/include-file-from-zip-or-phar.html>`__
+
+.. _php-stream-wrapper-allowlist-feature:
+
+Allowlist of php stream-wrapper
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The builtin `"php" stream wrapper <https://www.php.net/manual/en/wrappers.php.php>`__
+has support for common streams, like ``stdin``, ``stdout`` or ``stderr``, but
+also for the dangerous ``filter`` one.
+
+Examples of related vulnerabilities
+"""""""""""""""""""""""""""""""""""
+
+- `CNEXT exploits <https://github.com/ambionics/cnext-exploits/>`__
+- Synacktiv's `php_filter_chain_generator <https://github.com/synacktiv/php_filter_chain_generator>`__ tool
+- Ambionic's `wrapwrap <https://github.com/ambionics/wrapwrap>`__ tool
 
 .. _eval-feature:
 

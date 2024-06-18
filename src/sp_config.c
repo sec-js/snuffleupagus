@@ -11,7 +11,7 @@ static zend_result sp_process_config_root(sp_parsed_keyword *parsed_rule) {
     {parse_unserialize_noclass, SP_TOKEN_UNSERIALIZE_NOCLASS, &(SPCFG(unserialize_noclass))},
     {parse_enable,              SP_TOKEN_HARDEN_RANDOM, &(SPCFG(random).enable)},
     {parse_log_media,           SP_TOKEN_LOG_MEDIA, &(SPCFG(log_media))},
-    {parse_ulong,               SP_TOKEN_LOG_MAX_LEN, &(SPCFG(log_max_len))},
+    {parse_uint,               SP_TOKEN_LOG_MAX_LEN, &(SPCFG(log_max_len))},
     {parse_disabled_functions,  SP_TOKEN_DISABLE_FUNC, NULL},
     {parse_readonly_exec,       SP_TOKEN_READONLY_EXEC, &(SPCFG(readonly_exec))},
     {parse_enable,              SP_TOKEN_GLOBAL_STRICT, &(SPCFG(global_strict).enable)},
@@ -90,7 +90,7 @@ zend_result sp_process_rule(sp_parsed_keyword *parsed_rule, const sp_config_keyw
 
     if (!found_kw) {
       zend_string *kwname = zend_string_init(kw->kw, kw->kwlen, 0);
-      sp_log_err("config", "Unexpected keyword '%s' on line %d", ZSTR_VAL(kwname), kw->lineno);
+      sp_log_err("config", "Unexpected keyword '%s' on line %zu", ZSTR_VAL(kwname), kw->lineno);
       zend_string_release_ex(kwname, 0);
       return FAILURE;
     }
@@ -198,13 +198,13 @@ SP_PARSEKW_FN(parse_int) {
   return ret;
 }
 
-SP_PARSEKW_FN(parse_ulong) {
+SP_PARSEKW_FN(parse_uint) {
   int ret = SP_PARSER_SUCCESS;
   SP_PARSE_ARG(value);
 
   char *endptr;
   errno = 0;
-  *(u_long*)retval = (u_long)strtoul(ZSTR_VAL(value), &endptr, 10);
+  *(u_int*)retval = (u_int)strtoul(ZSTR_VAL(value), &endptr, 10);
   if (errno != 0 || !endptr || endptr == ZSTR_VAL(value)) {
     sp_log_err("config", "Failed to parse arg '%s' of `%s` on line %zu", ZSTR_VAL(value), token, kw->lineno);
     ret = SP_PARSER_ERROR;
@@ -217,7 +217,7 @@ SP_PARSEKW_FN(parse_cidr) {
   CHECK_DUPLICATE_KEYWORD(retval);
   SP_PARSE_ARG(value);
 
-  sp_cidr *cidr = pecalloc(sizeof(sp_cidr), 1, 1);
+  sp_cidr *cidr = pecalloc(1, sizeof(sp_cidr), 1);
 
   if (0 != get_ip_and_cidr(ZSTR_VAL(value), cidr)) {
     pefree(cidr, 1);
